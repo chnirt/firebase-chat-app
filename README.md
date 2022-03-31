@@ -44,3 +44,11 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+## See more
+
+https://reactjs.org/docs/static-type-checking.html
+https://v5.reactrouter.com/web/guides/quick-start
+https://prettier.io/docs/en/configuration.html
+https://ant.design/docs/react/use-in-typescript
+https://blog.logrocket.com/how-to-use-typescript-with-react-18-alpha/
