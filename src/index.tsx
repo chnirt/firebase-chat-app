@@ -5,9 +5,10 @@ import { BrowserRouter as Router } from 'react-router-dom'
 import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
-import AuthProvider from './context/auth'
 import { Loading } from './components/Loading'
+import AuthProvider from './context/auth'
 import LoadingProvider from './context/loading'
+import I18nProvider from './context/i18n'
 
 // ReactDOM.render(
 //   <React.StrictMode>
@@ -32,7 +33,9 @@ root.render(
     <LoadingProvider>
       <AuthProvider>
         <Suspense fallback={<Loading />}>
-          <App />
+          <I18nProvider>
+            <App />
+          </I18nProvider>
         </Suspense>
       </AuthProvider>
     </LoadingProvider>

@@ -1,24 +1,37 @@
 import { Button, Checkbox, Col, Form, Input, Row, Typography } from 'antd'
-import { Fragment, useState } from 'react'
-import { Loading } from '../../components'
+import { Fragment, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
+
+import { ReactComponent as Logo } from '../../assets/logo/logo-logomark.svg'
+import { signInAccount } from '../../mock'
+import { useLoading } from '../../context'
 
 const { Title, Text } = Typography
 
-const USERNAME = ''
-const PASSWORD = ''
-
 export default function SignIn() {
-  const [loading, setLoading] = useState(false)
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const loading = useLoading()
 
-  const onFinish = () => {}
+  const onFinish = useCallback((values: any) => {
+    loading.show()
+    // console.log('Success:', values)
+    setTimeout(() => {
+      loading.hide()
+    }, 1000)
+  }, [])
 
-  const onFinishFailed = () => {}
+  const onFinishFailed = useCallback((errorInfo: any) => {
+    // console.log('Failed:', errorInfo)
+  }, [])
 
-  const navigateRegister = () => {}
+  const navigateRegister = useCallback(() => {
+    navigate('/sign-up')
+  }, [])
 
   return (
     <Fragment>
-      {/* <Loading spinning={loading}> */}
       <Row>
         <Col
           xs={24}
@@ -43,12 +56,17 @@ export default function SignIn() {
               }}
             >
               {/* <FadeIn> */}
-              {/* <Logo fill={PRIMARY_COLOR} /> */}
+              <Logo
+                width={50}
+                height={68}
+                // fill={PRIMARY_COLOR}
+              />
               {/* </FadeIn> */}
             </Row>
             <Row style={{ justifyContent: 'center' }}>
               <Title level={2}>
                 {/* <SlideLeft>SendBird Messenger</SlideLeft> */}
+                {process.env.REACT_APP_APP_NAME} Messenger
               </Title>
             </Row>
             <Row
@@ -57,16 +75,20 @@ export default function SignIn() {
                 height: '5vh',
               }}
             >
-              {/* <Text>{t('src.screens.login.SIWSTGS')}</Text> */}
+              <Text>
+                {t('src.screens.login.SIWSTGS', {
+                  appName: process.env.REACT_APP_APP_NAME,
+                })}
+              </Text>
             </Row>
             <Form
               style={{ padding: '0 5vw' }}
               name="normal_login"
               className="login-form"
               initialValues={{
-                emailOrYourPhoneNumber: USERNAME,
-                password: PASSWORD,
-                remember: true,
+                emailOrYourPhoneNumber: signInAccount.emailOrYourPhoneNumber,
+                password: signInAccount.password,
+                remember: signInAccount.remember,
               }}
               onFinish={onFinish}
               onFinishFailed={onFinishFailed}
@@ -102,7 +124,7 @@ export default function SignIn() {
                   }}
                 >
                   <Button type="link" htmlType="submit">
-                    {/* {t('src.screens.login.Continue')} */}
+                    {t('src.screens.login.Continue')}
                   </Button>
                 </div>
               </Form.Item>
@@ -122,7 +144,7 @@ export default function SignIn() {
                   valuePropName="checked"
                   noStyle
                 >
-                  <Checkbox>{/* {t('src.screens.login.KMSI')} */}</Checkbox>
+                  <Checkbox>{t('src.screens.login.KMSI')}</Checkbox>
                 </Form.Item>
               </div>
             </Form>
@@ -136,12 +158,13 @@ export default function SignIn() {
             }}
           >
             <Button onClick={navigateRegister} type="link">
-              {/* {t('src.screens.login.NOS')} */}
+              {t('src.screens.login.NOS', {
+                appName: process.env.REACT_APP_APP_NAME,
+              })}
             </Button>
           </div>
         </Col>
       </Row>
-      {/* </Loading> */}
     </Fragment>
   )
 }

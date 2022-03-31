@@ -1,14 +1,11 @@
-import React, { lazy } from 'react'
-import logo from './logo.svg'
+import { lazy } from 'react'
+// import logo from './logo.svg'
 import './App.less'
 
 import { useRoutes } from 'react-router-dom'
 import { PublicRoute, PrivateRoute } from './helper'
 import { Layout } from './layout'
 
-import SignUpScreen from './pages/SignUp'
-import SignInScreen from './pages/SignIn'
-import HomeScreen from './pages/Home'
 const LazySignInScreen = lazy(() => import('./pages/SignIn'))
 const LazySignUpScreen = lazy(() => import('./pages/SignUp'))
 const LazyHomeScreen = lazy(() => import('./pages/Home'))
@@ -28,8 +25,7 @@ function App() {
       path: '/',
       element: (
         <PublicRoute>
-          {/* <LazySignInScreen /> */}
-          <SignInScreen />
+          <LazySignInScreen />
         </PublicRoute>
       ),
     },
@@ -37,8 +33,7 @@ function App() {
       path: '/sign-up',
       element: (
         <PublicRoute>
-          {/* <LazySignUpScreen /> */}
-          <SignUpScreen />
+          <LazySignUpScreen />
         </PublicRoute>
       ),
     },
@@ -47,8 +42,7 @@ function App() {
       element: (
         <PrivateRoute>
           <Layout>
-            {/* <LazyHomeScreen /> */}
-            <HomeScreen />
+            <LazyHomeScreen />
           </Layout>
         </PrivateRoute>
       ),

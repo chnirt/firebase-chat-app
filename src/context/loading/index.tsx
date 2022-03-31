@@ -13,9 +13,9 @@ const defaultState = {
 
 const LoadingContext = createContext<ILoadingContext>(defaultState)
 
-interface LoadingProviderProps {}
+interface ILoadingProviderProps {}
 
-const LoadingProvider: FunctionComponent<LoadingProviderProps> = ({
+const LoadingProvider: FunctionComponent<ILoadingProviderProps> = ({
   children,
 }) => {
   const [count, setCount] = useState(0)
@@ -32,14 +32,11 @@ const LoadingProvider: FunctionComponent<LoadingProviderProps> = ({
 
   return (
     <LoadingContext.Provider value={value}>
-      {/* {count > 0 && <Loading />} */}
-      {children}
+      <Loading spinning={count > 0}>{children}</Loading>
     </LoadingContext.Provider>
   )
 }
 
-const useLoading = () => useContext(LoadingContext)
-
-export { useLoading }
+export const useLoading = () => useContext(LoadingContext)
 
 export default LoadingProvider

@@ -1,25 +1,33 @@
+import { FunctionComponent } from 'react'
 import { Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />
 
-export function Loading({ spinning = true, children = {} }) {
-  // if (!children) {
-  return <div>Loading...</div>
-  return (
-    <Spin
-      style={
-        {
-          // position: 'fixed',
-          // top: '50%',
-          // left: '50%',
-        }
-      }
-      // spinning={spinning}
-      indicator={antIcon}
-    />
-  )
-  // }
+interface ILoadingProps {
+  spinning?: boolean
+}
+
+const Loading: FunctionComponent<ILoadingProps> = ({
+  spinning = false,
+  children,
+}) => {
+  if (typeof children === 'undefined')
+    return (
+      <div
+        style={{
+          width: '100vw',
+          height: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#ffffff70',
+        }}
+      >
+        <Spin indicator={antIcon} />
+      </div>
+    )
+
   return (
     <Spin
       style={{ maxHeight: '100vh' }}
@@ -30,3 +38,5 @@ export function Loading({ spinning = true, children = {} }) {
     </Spin>
   )
 }
+
+export { Loading }
