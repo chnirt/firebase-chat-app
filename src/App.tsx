@@ -25,7 +25,8 @@ function App() {
       path: '/',
       element: (
         <PublicRoute>
-          <LazySignInScreen />
+          <LazyHomeScreen />
+          {/* <LazySignInScreen /> */}
         </PublicRoute>
       ),
     },

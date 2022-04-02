@@ -13,9 +13,9 @@ export const Layout = ({ children }: PropsWithChildren<LayoutProps>) => {
   }
   return (
     <Fragment>
-      <Link to="/home">Home</Link>
-      <Link to="/profile">Profile</Link>
-      <button onClick={handleSignOut}>Sign Out</button>
+      {/* <Link to="/home">Home</Link> */}
+      {/* <Link to="/profile">Profile</Link> */}
+      {/* <button onClick={handleSignOut}>Sign Out</button> */}
       {children}
     </Fragment>
   )

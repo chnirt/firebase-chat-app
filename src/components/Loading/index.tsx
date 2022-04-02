@@ -30,7 +30,7 @@ const Loading: FunctionComponent<ILoadingProps> = ({
 
   return (
     <Spin
-      style={{ maxHeight: '100vh' }}
+      style={{ height: '100vh', maxHeight: '100vh' }}
       spinning={spinning}
       indicator={antIcon}
     >

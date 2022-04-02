@@ -5,21 +5,28 @@ import { useNavigate } from 'react-router-dom'
 
 import { ReactComponent as Logo } from '../../assets/logo/logo-logomark.svg'
 import { signInAccount } from '../../mock'
-import { useLoading } from '../../context'
+import { useAuth } from '../../context'
 
 const { Title, Text } = Typography
+
+interface IValues {
+  emailOrYourPhoneNumber: string
+  password: string
+}
 
 export default function SignIn() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const loading = useLoading()
+  const auth = useAuth()
 
-  const onFinish = useCallback((values: any) => {
-    loading.show()
+  const onFinish = useCallback((values: IValues) => {
     // console.log('Success:', values)
-    setTimeout(() => {
-      loading.hide()
-    }, 1000)
+    try {
+      auth.signIn({
+        email: values.emailOrYourPhoneNumber,
+        password: values.password,
+      })
+    } catch (error) {}
   }, [])
 
   const onFinishFailed = useCallback((errorInfo: any) => {
@@ -154,7 +161,7 @@ export default function SignIn() {
             style={{
               display: 'flex',
               justifyContent: 'center',
-              height: 100,
+              height: '5vh',
             }}
           >
             <Button onClick={navigateRegister} type="link">

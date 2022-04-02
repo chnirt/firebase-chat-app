@@ -193,7 +193,7 @@ export default function SignUp() {
             style={{
               display: 'flex',
               justifyContent: 'center',
-              height: 100,
+              height: '5vh',
             }}
           >
             <Button onClick={navigateLogin} type="link">

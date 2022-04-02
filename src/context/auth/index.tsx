@@ -10,7 +10,7 @@ import {
 //   FBSignOut,
 //   onFBAuthStateChanged,
 // } from '../../config'
-// import { useLoading } from '../loading'
+import { useLoading } from '../loading'
 
 interface IUser {
   uid: string
@@ -19,10 +19,15 @@ interface IUser {
   photoURL: string
 }
 
+interface ISignInUser {
+  email: string
+  password: string
+}
+
 interface IAuthContext {
-  user: IUser | null
+  user: IUser | ISignInUser | null
   isAuth: boolean
-  signIn: (user: IUser) => void
+  signIn: (user: ISignInUser) => void
   signUp: () => void
   signOut: () => void
 }
@@ -44,8 +49,8 @@ type AuthProviderProps = {
 const AuthProvider: FunctionComponent<AuthProviderProps> = ({
   children,
 }: AuthProviderProps) => {
-  const [user, setUser] = useState<IUser | null>(null)
-  // const loading = useLoading()
+  const [user, setUser] = useState<IUser | ISignInUser | null>(null)
+  const loading = useLoading()
 
   // useEffect(() => {
   //   const unsubscribe = onFBAuthStateChanged((fBUser: any) => {
@@ -57,29 +62,33 @@ const AuthProvider: FunctionComponent<AuthProviderProps> = ({
   const value = {
     user,
     isAuth: !!user,
-    signIn: async (userInput: IUser) => {
-      // loading.show()
-      // try {
-      //   await FBSignInWithWithEmailAndPassword(
-      //     userInput.email,
-      //     userInput.password
-      //   )
-      // } catch (error) {
-      //   console.log(error)
-      // } finally {
-      //   loading.hide()
-      // }
+    signIn: async (userInput: ISignInUser) => {
+      loading.show()
+      try {
+        // await FBSignInWithWithEmailAndPassword(
+        //   userInput.email,
+        //   userInput.password
+        // )
+        setUser(userInput)
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+      } catch (error) {
+        console.log(error)
+      } finally {
+        loading.hide()
+      }
     },
     signUp: () => {},
     signOut: async () => {
-      // loading.show()
-      // try {
-      //   await FBSignOut()
-      // } catch (error) {
-      //   console.log(error)
-      // } finally {
-      //   loading.hide()
-      // }
+      loading.show()
+      try {
+        // await FBSignOut()
+        setUser(null)
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+      } catch (error) {
+        console.log(error)
+      } finally {
+        loading.hide()
+      }
     },
   }
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
