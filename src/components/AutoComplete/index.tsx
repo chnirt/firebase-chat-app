@@ -16,6 +16,7 @@ export function MyAutoComplete({
         style={{
           width: '100%',
           backgroundColor: '#efefef',
+          borderRadius: '8px',
         }}
         options={options}
         onSelect={onSelect}

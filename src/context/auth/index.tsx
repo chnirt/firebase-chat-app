@@ -69,8 +69,8 @@ const AuthProvider: FunctionComponent<AuthProviderProps> = ({
         //   userInput.email,
         //   userInput.password
         // )
-        setUser(userInput)
         await new Promise((resolve) => setTimeout(resolve, 2000))
+        setUser(userInput)
       } catch (error) {
         console.log(error)
       } finally {
@@ -82,8 +82,8 @@ const AuthProvider: FunctionComponent<AuthProviderProps> = ({
       loading.show()
       try {
         // await FBSignOut()
-        setUser(null)
         await new Promise((resolve) => setTimeout(resolve, 2000))
+        setUser(null)
       } catch (error) {
         console.log(error)
       } finally {
