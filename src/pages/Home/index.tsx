@@ -61,13 +61,13 @@ const MyNavbar = () => {
       }}
       onClick={handleMenuClick}
     >
-      <Menu.Item key={1} icon={<CgProfile />}>
+      <Menu.Item key={1} icon={<CgProfile size={16} />}>
         Profile
       </Menu.Item>
-      <Menu.Item key={2} icon={<CgBookmark />}>
+      <Menu.Item key={2} icon={<CgBookmark size={16} />}>
         Saved
       </Menu.Item>
-      <Menu.Item key={3} icon={<IoSettingsOutline />}>
+      <Menu.Item key={3} icon={<IoSettingsOutline size={16} />}>
         Setting
       </Menu.Item>
       <Menu.Divider />
@@ -221,17 +221,16 @@ const MyNavbar = () => {
                 }}
                 ghost
                 shape="circle"
-                icon={
-                  <Avatar
-                    shape="circle"
-                    size={24}
-                    icon={<UserOutlined color="#eeeeee" />}
-                    src={
-                      'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg'
-                    }
-                  />
-                }
-              />
+              >
+                <Avatar
+                  shape="circle"
+                  size={24}
+                  icon={<UserOutlined color="#eeeeee" />}
+                  src={
+                    'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg'
+                  }
+                />
+              </Button>
             </Dropdown>
           </Col>
         </Col>
