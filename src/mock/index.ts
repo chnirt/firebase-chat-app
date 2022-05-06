@@ -7,5 +7,6 @@ export const signInAccount = {
 export const signUpAccount = {
   fullName: 'Trịnh Chin Chin',
   emailOrYourPhoneNumber: 'trinhchinchin@gmail.com',
+  username: 'trinhchinchin',
   password: 'Admin@123',
 }

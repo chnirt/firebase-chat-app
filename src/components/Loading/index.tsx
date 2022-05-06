@@ -8,7 +8,7 @@ interface ILoadingProps {
   spinning?: boolean
 }
 
-const Loading: FunctionComponent<ILoadingProps> = ({
+export const Loading: FunctionComponent<ILoadingProps> = ({
   spinning = false,
   children,
 }) => {
@@ -22,6 +22,7 @@ const Loading: FunctionComponent<ILoadingProps> = ({
           justifyContent: 'center',
           alignItems: 'center',
           backgroundColor: '#ffffff70',
+          zIndex: 1001,
         }}
       >
         <Spin indicator={antIcon} />
@@ -30,7 +31,14 @@ const Loading: FunctionComponent<ILoadingProps> = ({
 
   return (
     <Spin
-      style={{ height: '100vh', maxHeight: '100vh' }}
+      style={{
+        height: '100vh',
+        maxHeight: '100vh',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#ffffff70',
+        zIndex: 1001,
+      }}
       spinning={spinning}
       indicator={antIcon}
     >
@@ -38,5 +46,3 @@ const Loading: FunctionComponent<ILoadingProps> = ({
     </Spin>
   )
 }
-
-export { Loading }

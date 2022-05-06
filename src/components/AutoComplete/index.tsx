@@ -1,15 +1,15 @@
 import { AutoComplete, Input, Empty } from 'antd'
 import { CgSearch } from 'react-icons/cg'
 
-export function MyAutoComplete({
+export const MyAutoComplete = ({
   style = {},
   options = [],
   value = '',
   onSelect = () => {},
   onSearch = () => {},
   onChange = () => {},
-  placeholder = 'Search for people',
-}) {
+  placeholder = 'Search',
+}) => {
   return (
     <div style={style}>
       <AutoComplete

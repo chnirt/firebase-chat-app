@@ -53,3 +53,5 @@ https://prettier.io/docs/en/configuration.html
 https://ant.design/docs/react/use-in-typescript
 https://blog.logrocket.com/how-to-use-typescript-with-react-18-alpha/
 https://undraw.co/
+
+https://fireship.io/lessons/star-ratings-system-with-firestore/

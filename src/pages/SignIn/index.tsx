@@ -19,15 +19,19 @@ export default function SignIn() {
   const navigate = useNavigate()
   const auth = useAuth()
 
-  const onFinish = useCallback((values: IValues) => {
-    // console.log('Success:', values)
-    try {
-      auth.signIn({
-        email: values.emailOrYourPhoneNumber,
-        password: values.password,
-      })
-    } catch (error) {}
-  }, [])
+  const onFinish = useCallback(
+    (values: IValues) => {
+      // console.log('Success:', values)
+      const { emailOrYourPhoneNumber, password } = values
+      try {
+        auth.signIn({
+          email: emailOrYourPhoneNumber,
+          password,
+        })
+      } catch (error) {}
+    },
+    [auth]
+  )
 
   const onFinishFailed = useCallback((errorInfo: any) => {
     // console.log('Failed:', errorInfo)
@@ -35,7 +39,7 @@ export default function SignIn() {
 
   const navigateRegister = useCallback(() => {
     navigate('/sign-up')
-  }, [])
+  }, [navigate])
 
   return (
     <Fragment>

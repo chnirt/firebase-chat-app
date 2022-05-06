@@ -5,30 +5,33 @@ import {
   useState,
   FunctionComponent,
 } from 'react'
-// import {
-//   FBSignInWithWithEmailAndPassword,
-//   FBSignOut,
-//   onFBAuthStateChanged,
-// } from '../../config'
+import {
+  onAuthStateChanged,
+  User,
+  createUserWithEmailAndPassword,
+  signOut,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from 'firebase/auth'
 import { useLoading } from '../loading'
-
-interface IUser {
-  uid: string
-  email: string
-  password: string
-  photoURL: string
-}
+import { auth, saveUserToFirestore } from '../../firebase'
+import { handleError } from '../../utils'
 
 interface ISignInUser {
   email: string
   password: string
 }
 
+interface ISignUpUser extends ISignInUser {
+  username: string
+  fullName: string
+}
+
 interface IAuthContext {
-  user: IUser | ISignInUser | null
+  user: ISignInUser | User | null
   isAuth: boolean
   signIn: (user: ISignInUser) => void
-  signUp: () => void
+  signUp: (user: ISignUpUser) => void
   signOut: () => void
 }
 
@@ -49,53 +52,98 @@ type AuthProviderProps = {
 const AuthProvider: FunctionComponent<AuthProviderProps> = ({
   children,
 }: AuthProviderProps) => {
-  const [user, setUser] = useState<IUser | ISignInUser | null>(null)
-  const loading = useLoading()
+  const [user, setUser] = useState<ISignInUser | User | null>(null)
+  const { show, hide } = useLoading()
 
-  // useEffect(() => {
-  //   const unsubscribe = onFBAuthStateChanged((fBUser: any) => {
-  //     setUser(fBUser)
-  //   })
-  //   return unsubscribe
-  // }, [])
+  useEffect(() => {
+    show()
+    onAuthStateChanged(
+      auth,
+      async (user) => {
+        if (user) {
+          // User is signed in, see docs for a list of available properties
+          // https://firebase.google.com/docs/reference/js/firebase.User
+          // const uid = user.uid
+          setUser(user)
+          // ...
+        } else {
+          // User is signed out
+          // ...
+        }
+        hide()
+      },
+      (error) => {
+        handleError(error)
+        hide()
+      },
+      () => {
+        hide()
+      }
+    )
+  }, [user, show, hide])
 
   const value = {
     user,
     isAuth: !!user,
     signIn: async (userInput: ISignInUser) => {
-      loading.show()
+      show()
       try {
-        // await FBSignInWithWithEmailAndPassword(
-        //   userInput.email,
-        //   userInput.password
-        // )
-        await new Promise((resolve) => setTimeout(resolve, 2000))
-        setUser(userInput)
+        const { email, password } = userInput
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        )
+        setUser(userCredential.user)
       } catch (error) {
-        console.log(error)
+        handleError(error)
       } finally {
-        loading.hide()
+        hide()
       }
     },
-    signUp: () => {},
-    signOut: async () => {
-      loading.show()
+    signUp: async (userInput: ISignUpUser) => {
+      show()
       try {
-        // await FBSignOut()
-        await new Promise((resolve) => setTimeout(resolve, 2000))
+        const { fullName, email, username, password } = userInput
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        )
+        if (userCredential) {
+          await updateProfile(userCredential.user, {
+            displayName: fullName,
+            // photoURL: 'https://example.com/jane-q-user/profile.jpg',
+          })
+          await saveUserToFirestore({
+            uid: userCredential.user.uid,
+            fullName,
+            email,
+            username,
+          })
+          setUser(userCredential.user)
+        }
+      } catch (error) {
+        handleError(error)
+      } finally {
+        hide()
+      }
+    },
+    signOut: async () => {
+      show()
+      try {
+        await signOut(auth)
         setUser(null)
       } catch (error) {
-        console.log(error)
+        handleError(error)
       } finally {
-        loading.hide()
+        hide()
       }
     },
   }
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
-const useAuth = () => useContext(AuthContext)
-
-export { useAuth }
+export const useAuth = () => useContext(AuthContext)
 
 export default AuthProvider

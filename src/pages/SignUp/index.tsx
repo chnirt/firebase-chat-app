@@ -1,11 +1,11 @@
 import { Fragment } from 'react'
-import { Row, Col, Typography, Form, Input, Button, notification } from 'antd'
+import { Row, Col, Typography, Form, Input, Button } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import { ReactComponent as Logo } from '../../assets/logo/logo-logomark.svg'
 import { signUpAccount } from '../../mock'
-import { useLoading } from '../../context'
+import { useAuth } from '../../context'
 // import { PRIMARY_COLOR } from '@constants'
 // import { useFirebase } from '@context'
 // import { FadeIn, SlideLeft } from '@animations'
@@ -15,43 +15,20 @@ const { Title, Text } = Typography
 export default function SignUp() {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const loading = useLoading()
-  // const { registerFB } = useFirebase()
+  const auth = useAuth()
 
   const onFinish = async (values: any) => {
-    loading.show()
-    // const { fullName, emailOrYourPhoneNumber, password } = values
-    // setLoading(true)
-    // try {
-    //   const currentUser = await registerFB(
-    //     fullName,
-    //     emailOrYourPhoneNumber,
-    //     password
-    //   )
-    //   // console.log(currentUser)
-    //   if (currentUser) {
-    //     notification['success']({
-    //       message: 'Register',
-    //       description: 'Register successfully!',
-    //       onClick: () => {
-    //         console.log('Notification Clicked!')
-    //       },
-    //       placement: 'bottomRight',
-    //     })
-    //   }
-    // } catch (error) {
-    //   notification['error']({
-    //     message: 'Login Error',
-    //     description: error.message,
-    //     onClick: () => {
-    //       console.log('Notification Clicked!')
-    //     },
-    //     placement: 'bottomRight',
-    //   })
-    // }
-    setTimeout(() => {
-      loading.hide()
-    }, 1000)
+    const { fullName, emailOrYourPhoneNumber, username, password } = values
+    try {
+      try {
+        auth.signUp({
+          fullName,
+          email: emailOrYourPhoneNumber,
+          username,
+          password,
+        })
+      } catch (error) {}
+    } catch (error) {}
   }
 
   const onFinishFailed = (errorInfo: any) => {
@@ -116,6 +93,7 @@ export default function SignUp() {
               initialValues={{
                 fullName: signUpAccount.fullName,
                 emailOrYourPhoneNumber: signUpAccount.emailOrYourPhoneNumber,
+                username: signUpAccount.username,
                 password: signUpAccount.password,
               }}
               onFinish={onFinish}
@@ -142,6 +120,17 @@ export default function SignUp() {
                 ]}
               >
                 <Input placeholder="Email or your phone number" />
+              </Form.Item>
+              <Form.Item
+                name="username"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input your Username!',
+                  },
+                ]}
+              >
+                <Input placeholder="Username" />
               </Form.Item>
               <Form.Item
                 name="password"
