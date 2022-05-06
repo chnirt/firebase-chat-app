@@ -1,5 +1,16 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Avatar, Button, Card, Image, Input, Row, Typography } from 'antd'
+import {
+  Avatar,
+  Button,
+  Card,
+  Col,
+  Comment,
+  Image,
+  Input,
+  List,
+  Row,
+  Typography,
+} from 'antd'
 import { FiBookmark, FiHeart, FiMoreHorizontal } from 'react-icons/fi'
 import { IoChatbubbleOutline, IoPaperPlaneOutline } from 'react-icons/io5'
 import { AiOutlineSmile } from 'react-icons/ai'
@@ -7,11 +18,55 @@ import Moment from 'react-moment'
 import {
   auth,
   deleteLikeFromFirestore,
+  onSnapshotComments,
   onSnapshotLikes,
+  saveCommentToFiretore,
   saveLikeToFirestore,
 } from '../../firebase'
 
 const { Title, Paragraph } = Typography
+
+const CommentList = ({ comments = [] }) => (
+  <List
+    dataSource={comments}
+    header={`${comments.length} ${comments.length > 1 ? 'replies' : 'reply'}`}
+    itemLayout="horizontal"
+    renderItem={(props) => <Comment {...props} />}
+  />
+)
+
+const Editor = ({ onChange, onSubmit, submitting, value }: any) => (
+  <Row align="middle">
+    <div
+      style={{
+        padding: '8px 16px 8px 0',
+      }}
+    >
+      <Button
+        style={{
+          border: 0,
+          boxShadow: 'none',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        ghost
+        shape="circle"
+        icon={<AiOutlineSmile size={24} color="#767676" />}
+      />
+    </div>
+
+    <Input
+      style={{ flex: 1, borderWidth: 0 }}
+      placeholder="Add a comment…"
+      onChange={onChange}
+      value={value}
+    />
+    <Button type="link" loading={submitting} onClick={onSubmit}>
+      Post
+    </Button>
+  </Row>
+)
 
 export const Post = ({
   id,
@@ -22,7 +77,10 @@ export const Post = ({
   createdAt,
 }: any) => {
   const [likes, setLikes] = useState([])
-  const [liked, setLiked] = useState<any>(null)
+  const [liked, setLiked] = useState<any | null>(null)
+  const [comments, setComments] = useState<any>([])
+  const [submitting, setSubmitting] = useState(false)
+  const [value, setValue] = useState('')
 
   useEffect(() => {
     const hasLike: any = likes.find(
@@ -45,6 +103,44 @@ export const Post = ({
     return () => unsubscribeLikes()
   }, [id])
 
+  useEffect(() => {
+    const unsubscribeComments: any = onSnapshotComments(
+      id,
+      (querySnapshot: any) => {
+        const data = querySnapshot.docs.map((docSnapshot: any) => {
+          return {
+            id: docSnapshot.id,
+            ...docSnapshot.data(),
+          }
+        })
+        const formatComments = data.map((item: any) => ({
+          avatar: (
+            <Avatar
+              shape="circle"
+              size={24}
+              // icon={<UserOutlined color="#eeeeee" />}
+              src={item.avatar}
+              // src={
+              //   'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg'
+              // }
+            >
+              {item.username.split(' ').map((char: string) => char.charAt(0))}
+            </Avatar>
+          ),
+          author: item.username,
+          content: <p>{item.content}</p>,
+          datetime: (
+            <Paragraph style={{ marginBottom: 0 }} ellipsis={true}>
+              <Moment fromNow>{item.createdAt?.toDate()}</Moment>
+            </Paragraph>
+          ),
+        }))
+        setComments(formatComments)
+      }
+    )
+    return () => unsubscribeComments()
+  }, [id])
+
   const handleLike = useCallback(async () => {
     const likeInput = {
       ...(liked ? { id: liked.id } : {}),
@@ -53,15 +149,41 @@ export const Post = ({
     try {
       if (!liked) {
         // create
-        await saveLikeToFirestore(likeInput)
-        setLiked(true)
+        const newLike: any = await saveLikeToFirestore(likeInput)
+        setLiked(newLike)
       } else {
         // delete
         await deleteLikeFromFirestore(likeInput)
-        setLiked(false)
+        setLiked(null)
       }
     } catch (error) {}
   }, [liked, id])
+
+  const handleChange = useCallback((e) => {
+    setValue(e.target.value)
+  }, [])
+
+  const handleSubmit = useCallback(async () => {
+    try {
+      if (!value) {
+        return
+      }
+
+      setSubmitting(true)
+
+      // call api
+      const commentData = {
+        postId: id,
+        content: value,
+      }
+      await saveCommentToFiretore(commentData)
+
+      setSubmitting(false)
+      setValue('')
+    } catch (error) {
+    } finally {
+    }
+  }, [value])
 
   return (
     <Card
@@ -209,7 +331,7 @@ export const Post = ({
         align="middle"
       >
         <Title style={{ marginBottom: 0 }} level={5}>
-          trinhchinchin
+          {username}
         </Title>
         &nbsp;
         {caption && (
@@ -226,45 +348,31 @@ export const Post = ({
         }}
         align="middle"
       >
-        <Paragraph
-          style={{ marginBottom: 0, fontSize: '10px' }}
-          ellipsis={true}
-        >
+        <Paragraph style={{ marginBottom: 0 }} ellipsis={true}>
           <Moment fromNow>{createdAt?.toDate()}</Moment>
         </Paragraph>
       </Row>
 
       <Row
         style={{
-          paddingLeft: '16px',
-          paddingRight: '16px',
+          margin: '0 0 auto',
+          padding: '0 16px',
         }}
         align="middle"
       >
-        <div
-          style={{
-            padding: '8px 16px 8px 0',
-          }}
-        >
-          <Button
-            style={{
-              border: 0,
-              boxShadow: 'none',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            ghost
-            shape="circle"
-            icon={<AiOutlineSmile size={24} color="#767676" />}
+        <Col flex={1}>
+          {comments.length > 0 && <CommentList comments={comments} />}
+          <Comment
+            content={
+              <Editor
+                onChange={handleChange}
+                onSubmit={handleSubmit}
+                submitting={submitting}
+                value={value}
+              />
+            }
           />
-        </div>
-
-        <Input
-          style={{ flex: 1, borderWidth: 0 }}
-          placeholder="Add a comment…"
-        />
-        <Button type="link">Post</Button>
+        </Col>
       </Row>
     </Card>
   )

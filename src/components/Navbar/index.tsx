@@ -153,7 +153,7 @@ export const MyNavbar = ({ handleCreatePost = () => {} }) => {
           </Col>
 
           <Col xs={0} sm={8}>
-            <MyAutoComplete />
+            {/* <MyAutoComplete /> */}
           </Col>
 
           <Col

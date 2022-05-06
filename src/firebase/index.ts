@@ -77,9 +77,9 @@ export const savePostToFirestore = async (postInput: any) => {
     const postData = {
       caption,
       userId: auth!.currentUser!.uid,
+      avatar: auth!.currentUser!.photoURL,
       fullName: userDocSnap.data().fullName,
       username: userDocSnap.data().username,
-      avatar: auth!.currentUser!.photoURL,
       createdAt: serverTimestamp(),
     }
     const docRef = await addDoc(collection(db, 'posts'), postData)
@@ -115,7 +115,11 @@ export const saveLikeToFirestore = async (likeInput: any) => {
       createdAt: serverTimestamp(),
     }
     const docRef = await addDoc(collection(db, 'likes'), postData)
-    return docRef
+    const newLike = {
+      ...postData,
+      id: docRef.id,
+    }
+    return newLike
   } catch (error) {}
 }
 
@@ -134,4 +138,41 @@ export const deleteLikeFromFirestore = async (likeInput: any) => {
     const { id } = likeInput
     await deleteDoc(doc(db, 'likes', id))
   } catch (e) {}
+}
+
+export const saveCommentToFiretore = async (commentInput: any) => {
+  try {
+    const userDocRef = doc(db, 'users', auth!.currentUser!.uid)
+    const userDocSnap = await getDoc(userDocRef)
+    if (!userDocSnap.exists()) {
+      console.log('No such document!')
+      return
+    }
+
+    const commentData = {
+      userId: auth!.currentUser!.uid,
+      avatar: auth!.currentUser!.photoURL,
+      username: userDocSnap.data().username,
+      content: commentInput.content,
+      createdAt: serverTimestamp(),
+    }
+    const docRef = await addDoc(
+      collection(db, `posts/${commentInput.postId}/comments`),
+      commentData
+    )
+    const newComment = {
+      ...commentData,
+      id: docRef.id,
+    }
+    return newComment
+  } catch (error) {}
+}
+
+export const onSnapshotComments = (postId: string, nextOrObserver: any) => {
+  const q = query(
+    collection(db, `posts/${postId}/comments`),
+    orderBy('createdAt', 'desc'),
+    limit(10)
+  )
+  return onSnapshot(q, nextOrObserver)
 }
