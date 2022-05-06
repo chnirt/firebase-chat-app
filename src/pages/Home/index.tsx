@@ -10,8 +10,6 @@ export default function Home() {
   const [visible, setVisible] = useState(false)
   const [posts, setPosts] = useState([])
 
-  console.log(process.env.NODE_ENV)
-
   useEffect(() => {
     const unsubscribePosts: any = onSnapshotPosts((querySnapshot: any) => {
       const data = querySnapshot.docs.map((docSnapshot: any) => {
