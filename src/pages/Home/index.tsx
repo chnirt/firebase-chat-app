@@ -1,14 +1,9 @@
 import { Fragment, useEffect, useState } from 'react'
-import { Row, Col, Form } from 'antd'
 
-import { MyNavbar, PostCreateForm, Post } from '../../components'
-import { useLoading } from '../../context'
-import { onSnapshotPosts, savePostToFirestore } from '../../firebase'
+import { Post } from '../../components'
+import { onSnapshotPosts } from '../../firebase'
 
 export default function Home() {
-  const { show, hide } = useLoading()
-  const [form] = Form.useForm()
-  const [visible, setVisible] = useState(false)
   const [posts, setPosts] = useState([])
 
   useEffect(() => {
@@ -25,65 +20,12 @@ export default function Home() {
     return () => unsubscribePosts()
   }, [])
 
-  const handleCreatePost = () => setVisible(true)
-
-  const onCreate = async (values: any) => {
-    show()
-    // console.log('Received values of form: ', values)
-    try {
-      await savePostToFirestore(values)
-    } catch (error) {
-    } finally {
-      setVisible(false)
-      form.resetFields()
-      hide()
-    }
-  }
-
   return (
     <Fragment>
-      <section
-        style={{
-          minHeight: '100vh',
-          overflow: 'hidden',
-        }}
-      >
-        <div>
-          <section style={{ paddingTop: '90px' }}>
-            <Row>
-              <Col
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  flexDirection: 'column',
-                }}
-                // span={18}
-                xs={24}
-                sm={24}
-                // md={18}
-                // lg={24}
-                // xl={24}
-              >
-                {posts.length > 0 &&
-                  posts.map((post: any, ci: any) => {
-                    return <Post key={`card-${ci}`} {...post} />
-                  })}
-              </Col>
-            </Row>
-          </section>
-        </div>
-      </section>
-
-      <MyNavbar handleCreatePost={handleCreatePost} />
-
-      <PostCreateForm
-        form={form}
-        visible={visible}
-        onCreate={onCreate}
-        onCancel={() => {
-          setVisible(false)
-        }}
-      />
+      {posts.length > 0 &&
+        posts.map((post: any, ci: any) => {
+          return <Post key={`card-${ci}`} {...post} />
+        })}
     </Fragment>
   )
 }

@@ -63,6 +63,7 @@ export const PostCreateForm: React.FC<PostCreateFormProps> = ({
         // borderStyle: 'solid',
         borderRadius: 8,
         overflow: 'hidden',
+        paddingBottom: 0,
       }}
       visible={visible}
       title="Create new post"

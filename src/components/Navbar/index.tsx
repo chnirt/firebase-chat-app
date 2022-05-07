@@ -6,16 +6,25 @@ import {
   IoHomeOutline,
   IoSettingsOutline,
 } from 'react-icons/io5'
-import { useAuth } from '../../context'
-import { ReactComponent as Logo } from '../../assets/logo/logo-standard.svg'
-import { MyAutoComplete } from '../AutoComplete'
 import { AiOutlineCompass, AiOutlinePlusSquare } from 'react-icons/ai'
 import { FiHeart, FiLogOut } from 'react-icons/fi'
 import { UserOutlined } from '@ant-design/icons'
 import { signOut } from 'firebase/auth'
+import { useNavigate } from 'react-router-dom'
+import { useRecoilState } from 'recoil'
 
-export const MyNavbar = ({ handleCreatePost = () => {} }) => {
+import { MyAutoComplete } from '../AutoComplete'
+import { useAuth, useLoading, useModal } from '../../context'
+import { ReactComponent as Logo } from '../../assets/logo/logo-standard.svg'
+import { modalState } from '../../atoms'
+import { PostCreateForm } from '../PostCreateForm'
+import { savePostToFirestore } from '../../firebase'
+
+export const MyNavbar = () => {
+  const loading = useLoading()
   const auth = useAuth()
+  const modal = useModal()
+  const navigate = useNavigate()
 
   const handleMenuClick = (e: any) => {
     switch (e.key) {
@@ -26,11 +35,36 @@ export const MyNavbar = ({ handleCreatePost = () => {} }) => {
     }
   }
 
+  const handleCreatePost = useCallback(() => modal.show(), [])
+
+  const onCreate = useCallback(async (values: any) => {
+    loading.show()
+    // console.log('Received values of form: ', values)
+    try {
+      await savePostToFirestore(values)
+    } catch (error) {
+    } finally {
+      modal.hide()
+      modal.form.resetFields()
+      loading.hide()
+    }
+  }, [])
+
+  const onCancel = useCallback(() => modal.hide(), [])
+
   const handleSignOut = useCallback(async () => {
     try {
       await auth.signOut()
     } catch (error) {}
   }, [])
+
+  const navigateHome = useCallback(() => {
+    navigate('/home')
+  }, [navigate])
+
+  const navigateChat = useCallback(() => {
+    navigate('/chat')
+  }, [navigate])
 
   const items = [
     {
@@ -119,6 +153,7 @@ export const MyNavbar = ({ handleCreatePost = () => {} }) => {
         position: 'fixed',
         top: 0,
         background: '#fff',
+        zIndex: 1,
       }}
     >
       <Row
@@ -186,6 +221,7 @@ export const MyNavbar = ({ handleCreatePost = () => {} }) => {
               ghost
               shape="circle"
               icon={<IoHomeOutline size={24} color="#767676" />}
+              onClick={navigateHome}
             />
             <Button
               style={{
@@ -202,6 +238,7 @@ export const MyNavbar = ({ handleCreatePost = () => {} }) => {
                   <IoChatbubbleEllipsesOutline size={24} color="#767676" />
                 </Badge>
               }
+              onClick={navigateChat}
             />
             <Button
               style={{
@@ -286,6 +323,13 @@ export const MyNavbar = ({ handleCreatePost = () => {} }) => {
           </Col>
         </Col>
       </Row>
+
+      <PostCreateForm
+        form={modal.form}
+        visible={modal.visible}
+        onCreate={onCreate}
+        onCancel={onCancel}
+      />
     </Row>
   )
 }

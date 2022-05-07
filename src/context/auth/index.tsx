@@ -61,20 +61,20 @@ const AuthProvider: FunctionComponent<AuthProviderProps> = ({
   children,
 }: AuthProviderProps) => {
   const [user, setUser] = useState<IUser | null>(null)
-  const { show, hide } = useLoading()
+  const loading = useLoading()
 
   const fetchUser = useCallback(
     async (fbUser: User) => {
       try {
-        show()
+        loading.show()
         const foundUser: any = await getUserFromFirestore(fbUser.uid)
         setUser({ ...fbUser, ...foundUser })
       } catch (error) {
       } finally {
-        hide()
+        loading.hide()
       }
     },
-    [show, hide]
+    [loading]
   )
 
   const debounceFetchUser = _.debounce(fetchUser, 1000)
@@ -109,7 +109,7 @@ const AuthProvider: FunctionComponent<AuthProviderProps> = ({
       user,
       isAuth: !!user,
       signIn: async (userInput: ISignInUser) => {
-        show()
+        loading.show()
         try {
           const { email, password } = userInput
           const userCredential = await signInWithEmailAndPassword(
@@ -121,11 +121,11 @@ const AuthProvider: FunctionComponent<AuthProviderProps> = ({
         } catch (error) {
           handleError(error)
         } finally {
-          hide()
+          loading.hide()
         }
       },
       signUp: async (userInput: ISignUpUser) => {
-        show()
+        loading.show()
         try {
           const { fullName, email, username, password } = userInput
           const userCredential = await createUserWithEmailAndPassword(
@@ -149,22 +149,22 @@ const AuthProvider: FunctionComponent<AuthProviderProps> = ({
         } catch (error) {
           handleError(error)
         } finally {
-          hide()
+          loading.hide()
         }
       },
       signOut: async () => {
-        show()
+        loading.show()
         try {
           await signOut(auth)
           setUser(null)
         } catch (error) {
           handleError(error)
         } finally {
-          hide()
+          loading.hide()
         }
       },
     }),
-    [user, show, hide]
+    [user, loading]
   )
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

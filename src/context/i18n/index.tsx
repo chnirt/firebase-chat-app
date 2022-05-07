@@ -1,4 +1,11 @@
-import { useContext, createContext, useEffect, FunctionComponent } from 'react'
+import {
+  useContext,
+  createContext,
+  useEffect,
+  FunctionComponent,
+  useMemo,
+  useCallback,
+} from 'react'
 import i18n from 'i18next'
 import { initReactI18next, useTranslation } from 'react-i18next'
 
@@ -45,21 +52,23 @@ const I18nProvider: FunctionComponent<II18mProviderProps> = ({ children }) => {
     i18n.changeLanguage(localStorage.getItem('language') || 'en')
   }, [i18n])
 
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng)
-    localStorage.setItem('language', lng)
-  }
-
-  return (
-    <I18nContext.Provider
-      value={{
-        language: i18n.language,
-        changeLanguage,
-      }}
-    >
-      {children}
-    </I18nContext.Provider>
+  const changeLanguage = useCallback(
+    (lng: string) => {
+      i18n.changeLanguage(lng)
+      localStorage.setItem('language', lng)
+    },
+    [i18n]
   )
+
+  const value = useMemo(
+    () => ({
+      language: i18n.language,
+      changeLanguage,
+    }),
+    [changeLanguage, i18n.language]
+  )
+
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>
 }
 
 export const useI18n = () => useContext(I18nContext)

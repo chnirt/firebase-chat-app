@@ -8,11 +8,13 @@ import {
 import { Loading } from '../../components'
 
 interface ILoadingContext {
+  count: number
   show: () => void
   hide: () => void
 }
 
 const defaultState = {
+  count: 0,
   show: () => {},
   hide: () => {},
 }

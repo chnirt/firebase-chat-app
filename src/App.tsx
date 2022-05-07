@@ -10,6 +10,7 @@ const LazySignInScreen = lazy(() => import('./pages/SignIn'))
 const LazySignUpScreen = lazy(() => import('./pages/SignUp'))
 const LazyHomeScreen = lazy(() => import('./pages/Home'))
 const LazyProfileScreen = lazy(() => import('./pages/Profile'))
+const LazyChatScreen = lazy(() => import('./pages/Chat'))
 const LazyNotFoundScreen = lazy(() => import('./pages/NotFound'))
 
 function App() {
@@ -53,6 +54,16 @@ function App() {
         <PrivateRoute>
           <Layout>
             <LazyProfileScreen />
+          </Layout>
+        </PrivateRoute>
+      ),
+    },
+    {
+      path: '/chat',
+      element: (
+        <PrivateRoute>
+          <Layout>
+            <LazyChatScreen />
           </Layout>
         </PrivateRoute>
       ),
