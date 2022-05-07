@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, FunctionComponent } from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  FunctionComponent,
+  useMemo,
+} from 'react'
 import { Loading } from '../../components'
 
 interface ILoadingContext {
@@ -20,15 +26,18 @@ const LoadingProvider: FunctionComponent<ILoadingProviderProps> = ({
 }) => {
   const [count, setCount] = useState(0)
 
-  const value = {
-    count,
-    show: () => {
-      setCount((prevState) => prevState + 1)
-    },
-    hide: () => {
-      setCount((prevState) => Math.max(prevState - 1, 0))
-    },
-  }
+  const value = useMemo(
+    () => ({
+      count,
+      show: () => {
+        setCount((prevState) => prevState + 1)
+      },
+      hide: () => {
+        setCount((prevState) => Math.max(prevState - 1, 0))
+      },
+    }),
+    [count]
+  )
 
   return (
     <LoadingContext.Provider value={value}>

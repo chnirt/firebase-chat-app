@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Avatar,
   Button,
@@ -35,7 +35,13 @@ const CommentList = ({ comments = [] }) => (
   />
 )
 
-const Editor = ({ onChange, onSubmit, submitting, value }: any) => (
+const Editor = ({
+  sharedProps,
+  onChange,
+  onSubmit,
+  submitting,
+  value,
+}: any) => (
   <Row align="middle">
     <div
       style={{
@@ -57,6 +63,7 @@ const Editor = ({ onChange, onSubmit, submitting, value }: any) => (
     </div>
 
     <Input
+      {...sharedProps}
       style={{ flex: 1, borderWidth: 0 }}
       placeholder="Add a comment…"
       onChange={onChange}
@@ -81,6 +88,7 @@ export const Post = ({
   const [comments, setComments] = useState<any>([])
   const [submitting, setSubmitting] = useState(false)
   const [value, setValue] = useState('')
+  const inputRef = useRef<any>(null)
 
   useEffect(() => {
     const hasLike: any = likes.find(
@@ -183,7 +191,18 @@ export const Post = ({
     } catch (error) {
     } finally {
     }
-  }, [value])
+  }, [value, id])
+
+  const handleFocus = useCallback(() => {
+    console.log('hello')
+    inputRef.current!.focus()
+  }, [])
+
+  const sharedProps = {
+    style: { width: '100%' },
+    defaultValue: 'Ant Design love you!',
+    ref: inputRef,
+  }
 
   return (
     <Card
@@ -281,6 +300,7 @@ export const Post = ({
           ghost
           shape="circle"
           icon={<IoChatbubbleOutline size={24} color="#767676" />}
+          onClick={handleFocus}
         />
         <Button
           style={{
@@ -365,6 +385,7 @@ export const Post = ({
           <Comment
             content={
               <Editor
+                sharedProps={sharedProps}
                 onChange={handleChange}
                 onSubmit={handleSubmit}
                 submitting={submitting}

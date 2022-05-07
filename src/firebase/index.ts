@@ -57,6 +57,18 @@ export const saveUserToFirestore = async (userInput: any) => {
   } catch (error) {}
 }
 
+export const getUserFromFirestore = async (userId: string) => {
+  try {
+    const userDocRef = doc(db, 'users', userId)
+    const userDocSnap = await getDoc(userDocRef)
+    if (!userDocSnap.exists()) {
+      console.log('No such document!')
+      return
+    }
+    return userDocSnap.data()
+  } catch (error) {}
+}
+
 // Upload the file and metadata
 export const uploadFile = async (file: any, url = '') => {
   const storageRef = ref(storage, `${url}/${file.name}`)
@@ -68,18 +80,19 @@ export const uploadFile = async (file: any, url = '') => {
 export const savePostToFirestore = async (postInput: any) => {
   try {
     const { caption, files } = postInput
-    const userDocRef = doc(db, 'users', auth!.currentUser!.uid)
-    const userDocSnap = await getDoc(userDocRef)
-    if (!userDocSnap.exists()) {
-      console.log('No such document!')
-      return
-    }
+    const user: any = await getUserFromFirestore(auth!.currentUser!.uid)
+    // const userDocRef = doc(db, 'users', auth!.currentUser!.uid)
+    // const userDocSnap = await getDoc(userDocRef)
+    // if (!userDocSnap.exists()) {
+    //   console.log('No such document!')
+    //   return
+    // }
     const postData = {
       caption,
       userId: auth!.currentUser!.uid,
       avatar: auth!.currentUser!.photoURL,
-      fullName: userDocSnap.data().fullName,
-      username: userDocSnap.data().username,
+      fullName: user.fullName,
+      username: user.username,
       createdAt: serverTimestamp(),
     }
     const docRef = await addDoc(collection(db, 'posts'), postData)
@@ -142,17 +155,18 @@ export const deleteLikeFromFirestore = async (likeInput: any) => {
 
 export const saveCommentToFiretore = async (commentInput: any) => {
   try {
-    const userDocRef = doc(db, 'users', auth!.currentUser!.uid)
-    const userDocSnap = await getDoc(userDocRef)
-    if (!userDocSnap.exists()) {
-      console.log('No such document!')
-      return
-    }
+    const user: any = await getUserFromFirestore(auth!.currentUser!.uid)
+    // const userDocRef = doc(db, 'users', auth!.currentUser!.uid)
+    // const userDocSnap = await getDoc(userDocRef)
+    // if (!userDocSnap.exists()) {
+    //   console.log('No such document!')
+    //   return
+    // }
 
     const commentData = {
       userId: auth!.currentUser!.uid,
       avatar: auth!.currentUser!.photoURL,
-      username: userDocSnap.data().username,
+      username: user.username,
       content: commentInput.content,
       createdAt: serverTimestamp(),
     }

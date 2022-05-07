@@ -4,6 +4,8 @@ import {
   useEffect,
   useState,
   FunctionComponent,
+  useMemo,
+  useCallback,
 } from 'react'
 import {
   onAuthStateChanged,
@@ -13,8 +15,9 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth'
+import _ from 'lodash'
 import { useLoading } from '../loading'
-import { auth, saveUserToFirestore } from '../../firebase'
+import { auth, getUserFromFirestore, saveUserToFirestore } from '../../firebase'
 import { handleError } from '../../utils'
 
 interface ISignInUser {
@@ -27,8 +30,13 @@ interface ISignUpUser extends ISignInUser {
   fullName: string
 }
 
+interface IUser extends User {
+  username?: string
+  fullName?: string
+}
+
 interface IAuthContext {
-  user: ISignInUser | User | null
+  user: IUser | null
   isAuth: boolean
   signIn: (user: ISignInUser) => void
   signUp: (user: ISignUpUser) => void
@@ -52,95 +60,112 @@ type AuthProviderProps = {
 const AuthProvider: FunctionComponent<AuthProviderProps> = ({
   children,
 }: AuthProviderProps) => {
-  const [user, setUser] = useState<ISignInUser | User | null>(null)
+  const [user, setUser] = useState<IUser | null>(null)
   const { show, hide } = useLoading()
 
+  const fetchUser = useCallback(
+    async (fbUser: User) => {
+      try {
+        show()
+        const foundUser: any = await getUserFromFirestore(fbUser.uid)
+        setUser({ ...fbUser, ...foundUser })
+      } catch (error) {
+      } finally {
+        hide()
+      }
+    },
+    [show, hide]
+  )
+
+  const debounceFetchUser = _.debounce(fetchUser, 1000)
+
   useEffect(() => {
-    show()
     onAuthStateChanged(
       auth,
-      async (user) => {
-        if (user) {
+      async (fbUser) => {
+        if (fbUser) {
           // User is signed in, see docs for a list of available properties
           // https://firebase.google.com/docs/reference/js/firebase.User
           // const uid = user.uid
-          setUser(user)
+          if (user === null) {
+            // const foundUser = await getUserFromFirestore(fbUser.uid)
+            debounceFetchUser(fbUser)
+          }
           // ...
         } else {
           // User is signed out
           // ...
         }
-        hide()
       },
       (error) => {
         handleError(error)
-        hide()
       },
-      () => {
-        hide()
-      }
+      () => {}
     )
-  }, [user, show, hide])
+  }, [user, debounceFetchUser])
 
-  const value = {
-    user,
-    isAuth: !!user,
-    signIn: async (userInput: ISignInUser) => {
-      show()
-      try {
-        const { email, password } = userInput
-        const userCredential = await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        )
-        setUser(userCredential.user)
-      } catch (error) {
-        handleError(error)
-      } finally {
-        hide()
-      }
-    },
-    signUp: async (userInput: ISignUpUser) => {
-      show()
-      try {
-        const { fullName, email, username, password } = userInput
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        )
-        if (userCredential) {
-          await updateProfile(userCredential.user, {
-            displayName: fullName,
-            // photoURL: 'https://example.com/jane-q-user/profile.jpg',
-          })
-          await saveUserToFirestore({
-            uid: userCredential.user.uid,
-            fullName,
+  const value = useMemo(
+    () => ({
+      user,
+      isAuth: !!user,
+      signIn: async (userInput: ISignInUser) => {
+        show()
+        try {
+          const { email, password } = userInput
+          const userCredential = await signInWithEmailAndPassword(
+            auth,
             email,
-            username,
-          })
+            password
+          )
           setUser(userCredential.user)
+        } catch (error) {
+          handleError(error)
+        } finally {
+          hide()
         }
-      } catch (error) {
-        handleError(error)
-      } finally {
-        hide()
-      }
-    },
-    signOut: async () => {
-      show()
-      try {
-        await signOut(auth)
-        setUser(null)
-      } catch (error) {
-        handleError(error)
-      } finally {
-        hide()
-      }
-    },
-  }
+      },
+      signUp: async (userInput: ISignUpUser) => {
+        show()
+        try {
+          const { fullName, email, username, password } = userInput
+          const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          )
+          if (userCredential) {
+            await updateProfile(userCredential.user, {
+              displayName: fullName,
+              // photoURL: 'https://example.com/jane-q-user/profile.jpg',
+            })
+            await saveUserToFirestore({
+              uid: userCredential.user.uid,
+              fullName,
+              email,
+              username,
+            })
+            setUser(userCredential.user)
+          }
+        } catch (error) {
+          handleError(error)
+        } finally {
+          hide()
+        }
+      },
+      signOut: async () => {
+        show()
+        try {
+          await signOut(auth)
+          setUser(null)
+        } catch (error) {
+          handleError(error)
+        } finally {
+          hide()
+        }
+      },
+    }),
+    [user, show, hide]
+  )
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 

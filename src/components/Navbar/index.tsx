@@ -1,4 +1,5 @@
-import { Avatar, Badge, Button, Col, Dropdown, Menu, Row } from 'antd'
+import { useCallback } from 'react'
+import { Avatar, Badge, Button, Col, Dropdown, Menu, Popover, Row } from 'antd'
 import { CgBookmark, CgProfile } from 'react-icons/cg'
 import {
   IoChatbubbleEllipsesOutline,
@@ -9,7 +10,7 @@ import { useAuth } from '../../context'
 import { ReactComponent as Logo } from '../../assets/logo/logo-standard.svg'
 import { MyAutoComplete } from '../AutoComplete'
 import { AiOutlineCompass, AiOutlinePlusSquare } from 'react-icons/ai'
-import { FiHeart } from 'react-icons/fi'
+import { FiHeart, FiLogOut } from 'react-icons/fi'
 import { UserOutlined } from '@ant-design/icons'
 import { signOut } from 'firebase/auth'
 
@@ -25,11 +26,11 @@ export const MyNavbar = ({ handleCreatePost = () => {} }) => {
     }
   }
 
-  const handleSignOut = () => {
+  const handleSignOut = useCallback(async () => {
     try {
-      auth.signOut()
+      await auth.signOut()
     } catch (error) {}
-  }
+  }, [])
 
   const items = [
     {
@@ -78,6 +79,7 @@ export const MyNavbar = ({ handleCreatePost = () => {} }) => {
     // ]}
     />
   )
+
   // const menu = (
   //   <Menu
   //     style={{
@@ -99,6 +101,13 @@ export const MyNavbar = ({ handleCreatePost = () => {} }) => {
   //     <Menu.Item key={4}>Log Out</Menu.Item>
   //   </Menu>
   // )
+
+  const content = (
+    <div>
+      <p>Content</p>
+      <p>Content</p>
+    </div>
+  )
 
   return (
     <Row
@@ -230,10 +239,23 @@ export const MyNavbar = ({ handleCreatePost = () => {} }) => {
               ghost
               shape="circle"
               icon={<FiHeart size={24} color="#767676" />}
-              onClick={async () => {
-                await auth.signOut()
-              }}
             />
+            <Button
+              style={{
+                border: 0,
+                boxShadow: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              ghost
+              shape="circle"
+              icon={<FiLogOut size={24} color="#767676" />}
+              onClick={handleSignOut}
+            />
+            {/* <Popover content={content} title="Title" trigger="hover">
+              <Button>Hover me</Button>
+            </Popover> */}
             {/* <Dropdown
               overlay={menu}
               placement="bottomRight"

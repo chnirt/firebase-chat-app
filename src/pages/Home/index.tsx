@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState } from 'react'
-import { Row, Col } from 'antd'
+import { Row, Col, Form } from 'antd'
 
 import { MyNavbar, PostCreateForm, Post } from '../../components'
 import { useLoading } from '../../context'
@@ -7,6 +7,7 @@ import { onSnapshotPosts, savePostToFirestore } from '../../firebase'
 
 export default function Home() {
   const { show, hide } = useLoading()
+  const [form] = Form.useForm()
   const [visible, setVisible] = useState(false)
   const [posts, setPosts] = useState([])
 
@@ -33,8 +34,9 @@ export default function Home() {
       await savePostToFirestore(values)
     } catch (error) {
     } finally {
-      hide()
       setVisible(false)
+      form.resetFields()
+      hide()
     }
   }
 
@@ -75,6 +77,7 @@ export default function Home() {
       <MyNavbar handleCreatePost={handleCreatePost} />
 
       <PostCreateForm
+        form={form}
         visible={visible}
         onCreate={onCreate}
         onCancel={() => {

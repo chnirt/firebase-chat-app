@@ -1,6 +1,6 @@
-import React, { Suspense } from 'react'
+import { Suspense } from 'react'
 // import ReactDOM from 'react-dom'
-import * as ReactDOM from 'react-dom/client'
+import * as ReactDOMClient from 'react-dom/client'
 import { BrowserRouter as Router } from 'react-router-dom'
 import './index.css'
 import App from './App'
@@ -16,7 +16,9 @@ import I18nProvider from './context/i18n'
 //       <LoadingProvider>
 //         <AuthProvider>
 //           <Suspense fallback={<Loading />}>
-//             <App />
+//             <I18nProvider>
+//               // <App />
+//             </I18nProvider>
 //           </Suspense>
 //         </AuthProvider>
 //       </LoadingProvider>
@@ -27,7 +29,7 @@ import I18nProvider from './context/i18n'
 
 const container = document.getElementById('root')
 if (!container) throw new Error('Failed to find the root element')
-const root = ReactDOM.createRoot(container)
+const root = ReactDOMClient.createRoot(container)
 root.render(
   <Router>
     <LoadingProvider>
