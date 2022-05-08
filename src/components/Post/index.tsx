@@ -23,6 +23,7 @@ import {
   saveCommentToFiretore,
   saveLikeToFirestore,
 } from '../../firebase'
+import { capitalizeAvatarUsername } from '../../utils'
 
 const { Title, Paragraph } = Typography
 
@@ -132,7 +133,7 @@ export const Post = ({
               //   'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg'
               // }
             >
-              {item.username.split(' ').map((char: string) => char.charAt(0))}
+              {capitalizeAvatarUsername(item.username ?? '')}
             </Avatar>
           ),
           author: item.username,
@@ -194,7 +195,6 @@ export const Post = ({
   }, [value, id])
 
   const handleFocus = useCallback(() => {
-    console.log('hello')
     inputRef.current!.focus()
   }, [])
 
@@ -232,7 +232,7 @@ export const Post = ({
             //   'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg'
             // }
           >
-            {username.split(' ').map((char: string) => char.charAt(0))}
+            {capitalizeAvatarUsername(username ?? '')}
           </Avatar>
           {username && (
             <Title style={{ marginLeft: '14px', marginBottom: 0 }} level={5}>

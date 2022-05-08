@@ -10,3 +10,11 @@ export const handleError = (error: any) => {
     placement: 'bottomRight',
   })
 }
+
+export const capitalizeFirstLetter = (value: string) => {
+  return value.charAt(0).toUpperCase()
+}
+
+export const capitalizeAvatarUsername = (value: string) => {
+  return value.split(' ').map((char: string) => capitalizeFirstLetter(char))
+}

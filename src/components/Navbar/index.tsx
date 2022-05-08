@@ -189,11 +189,24 @@ export const MyNavbar = () => {
             }
             xs={8}
           >
-            <Logo
-              width={(29 * 938) / 264}
-              height={29}
-              // fill={PRIMARY_COLOR}
-            />
+            <Button
+              style={{
+                border: 0,
+                boxShadow: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 0,
+              }}
+              ghost
+              onClick={navigateHome}
+            >
+              <Logo
+                width={(29 * 938) / 264}
+                height={29}
+                // fill={PRIMARY_COLOR}
+              />
+            </Button>
           </Col>
 
           <Col xs={0} sm={8}>

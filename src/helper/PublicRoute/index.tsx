@@ -10,7 +10,8 @@ export function PublicRoute({ children }: PropsWithChildren<PublicRouteProps>) {
   return isAuth ? (
     <Navigate
       to={{
-        pathname: '/home',
+        // pathname: '/home',
+        pathname: '/chat',
       }}
     />
   ) : (

@@ -9,9 +9,9 @@ import {
   Avatar,
   Typography,
 } from 'antd'
-import { UploadOutlined } from '@ant-design/icons'
 import { useAuth } from '../../context'
 import { useCallback } from 'react'
+import { capitalizeAvatarUsername } from '../../utils'
 
 const { Title } = Typography
 
@@ -48,7 +48,6 @@ export const PostCreateForm: React.FC<PostCreateFormProps> = ({
     form
       .validateFields()
       .then((values) => {
-        // form.resetFields()
         onCreate(values)
       })
       .catch((info) => {
@@ -71,6 +70,7 @@ export const PostCreateForm: React.FC<PostCreateFormProps> = ({
       cancelText="Cancel"
       onCancel={onCancel}
       onOk={onOk}
+      centered
     >
       <Row
         style={{
@@ -91,7 +91,7 @@ export const PostCreateForm: React.FC<PostCreateFormProps> = ({
           //   'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg'
           // }
         >
-          {user?.username?.split(' ').map((char: string) => char.charAt(0))}
+          {capitalizeAvatarUsername(user?.username ?? '')}
         </Avatar>
         {user?.username && (
           <Title style={{ marginLeft: '14px', marginBottom: 0 }} level={5}>
@@ -146,9 +146,17 @@ export const PostCreateForm: React.FC<PostCreateFormProps> = ({
               return false
             }}
             maxCount={1}
-            // customRequest={customRequest}
           >
-            <Button icon={<UploadOutlined />}>Select from computer</Button>
+            <Button
+              type="primary"
+              style={{
+                backgroundColor: '#0095f6',
+                borderColor: '#0095f6',
+                borderRadius: 4,
+              }}
+            >
+              Select from computer
+            </Button>
           </Upload>
         </Form.Item>
       </Form>

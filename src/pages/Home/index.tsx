@@ -20,12 +20,20 @@ export default function Home() {
     return () => unsubscribePosts()
   }, [])
 
+  const Suggestions = () => {
+    return <div>Suggestions</div>
+  }
+
   return (
     <Fragment>
-      {posts.length > 0 &&
+      {posts.length > 0 ? (
         posts.map((post: any, ci: any) => {
           return <Post key={`card-${ci}`} {...post} />
-        })}
+        })
+      ) : (
+        <Suggestions />
+      )}
+      {/* ListEmptyComponent */}
     </Fragment>
   )
 }
