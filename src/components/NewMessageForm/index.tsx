@@ -1,20 +1,16 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   Button,
   Modal,
-  Form,
   Input,
-  Upload,
   FormInstance,
   Row,
-  Avatar,
   Typography,
   Divider,
 } from 'antd'
 import { IoCloseSharp } from 'react-icons/io5'
 
-import { useAuth } from '../../context'
-import { capitalizeAvatarUsername } from '../../utils'
+import { User } from '../User'
 
 const { Title, Text } = Typography
 
@@ -37,14 +33,27 @@ export const NewMessageForm: React.FC<NewMessageFormProps> = ({
   onCreate,
   onCancel,
 }) => {
-  const { user } = useAuth()
+  const [users, setUsers] = useState<any>([])
 
-  const normFile = useCallback((e: any) => {
-    // console.log('Upload event:', e)
-    if (Array.isArray(e)) {
-      return e
-    }
-    return e && e.fileList
+  useEffect(() => {
+    setUsers(
+      [...Array(20)].map((user: any, ui: number) => ({
+        id: ui,
+        username: `username-${ui}`,
+        fullName: `fullName-${ui}`,
+        isChecked: false,
+      }))
+    )
+  }, [])
+
+  const handleSelectUser = useCallback((selectUser) => {
+    setUsers((prevState: any) =>
+      prevState.map((user: any) =>
+        user.id === selectUser.id
+          ? { ...user, isChecked: !user.isChecked }
+          : user
+      )
+    )
   }, [])
 
   const onOk = useCallback(() => {
@@ -127,14 +136,6 @@ export const NewMessageForm: React.FC<NewMessageFormProps> = ({
             }}
             placeholder="Search..."
           />
-          {/* <Select
-              mode="multiple"
-              showArrow
-              tagRender={tagRender}
-              defaultValue={['gold', 'cyan']}
-              style={{ width: '100%' }}
-              options={options}
-            /> */}
         </Row>
       </Row>
       <Divider style={{ margin: 0 }} />
@@ -146,15 +147,14 @@ export const NewMessageForm: React.FC<NewMessageFormProps> = ({
         }}
       >
         <Row style={{ margin: 16 }}>
-          <Text strong> Suggested</Text>
+          <Text strong>Suggested</Text>
         </Row>
-        {[...Array(20)].map((user: any, ui: any) => {
-          return (
-            <Row key={`user-${ui}`} style={{ margin: 16 }}>
-              Some contents...
-            </Row>
-          )
-        })}
+        {users.length > 0 &&
+          users.map((user: any, ui: any) => {
+            return (
+              <User key={`user-${ui}`} user={user} onClick={handleSelectUser} />
+            )
+          })}
       </div>
     </Modal>
   )

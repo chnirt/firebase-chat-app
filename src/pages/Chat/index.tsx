@@ -1,72 +1,49 @@
-import { Fragment, useCallback, useState } from 'react'
-import {
-  Avatar,
-  Button,
-  Card,
-  Col,
-  Divider,
-  Input,
-  Modal,
-  Row,
-  // Select,
-  // Tag,
-  Typography,
-} from 'antd'
+import { Fragment, useCallback, useEffect, useState } from 'react'
+import { Avatar, Button, Card, Col, Divider, Form, Row, Typography } from 'antd'
+// import { UserOutlined } from '@ant-design/icons'
 import { FiEdit } from 'react-icons/fi'
-import { UserOutlined } from '@ant-design/icons'
 
 import { useAuth, useModal } from '../../context'
-import { NewMessageForm, YourMessages } from '../../components'
-import { IoCloseSharp } from 'react-icons/io5'
+import { NewMessageForm, YourMessages, Messages } from '../../components'
+import { capitalizeAvatarUsername } from '../../utils'
 
-const { Title, Paragraph, Text } = Typography
-
-// const options = [
-//   { value: 'gold' },
-//   { value: 'lime' },
-//   { value: 'green' },
-//   { value: 'cyan' },
-// ]
+const { Title, Paragraph } = Typography
 
 export default function Chat() {
   const auth = useAuth()
   const modal = useModal()
-  const [currentChat, setCurrentChat] = useState(null)
+  const [newMessageForm] = Form.useForm()
+  const [newMessageVisible, setNewMessageVisible] = useState(false)
+  const [chats, setChats] = useState<any>([])
+  const [currentChat, setCurrentChat] = useState<any>(null)
+
+  useEffect(() => {
+    setChats(
+      [...Array(20)].map((chat: any, ci: number) => ({
+        name: `chat-${ci}`,
+        lastMessage: 'xxx 🥲🥲',
+        unreadMessageCount: 1,
+      }))
+    )
+  }, [])
 
   const handleNewMessage = useCallback(() => {
-    modal.show()
+    setNewMessageVisible(true)
   }, [modal])
 
-  const handleOk = useCallback(() => {
-    modal.hide()
+  const handleOnCreate = useCallback(() => {
+    setNewMessageVisible(false)
   }, [modal])
 
-  const handleCancel = useCallback(() => {
-    modal.hide()
+  const handleOnCancel = useCallback(() => {
+    setNewMessageVisible(false)
   }, [modal])
 
   const handleJoinChat = useCallback((id: string) => {
-    console.log(id)
+    setCurrentChat({
+      id,
+    })
   }, [])
-
-  // const tagRender = (props: any) => {
-  //   const { label, value, closable, onClose } = props
-  //   const onPreventMouseDown = (event: any) => {
-  //     event.preventDefault()
-  //     event.stopPropagation()
-  //   }
-  //   return (
-  //     <Tag
-  //       color={value}
-  //       onMouseDown={onPreventMouseDown}
-  //       closable={closable}
-  //       onClose={onClose}
-  //       style={{ marginRight: 3 }}
-  //     >
-  //       {label}
-  //     </Tag>
-  //   )
-  // }
 
   return (
     <Fragment>
@@ -92,8 +69,11 @@ export default function Chat() {
           >
             <Row
               style={{
-                height: 60,
+                height: 59,
                 padding: '0 20px',
+                borderBottomWidth: 1,
+                borderBottomStyle: 'solid',
+                borderBottomColor: '#F0F0F0',
               }}
               align="middle"
               justify="space-between"
@@ -124,7 +104,6 @@ export default function Chat() {
                 onClick={handleNewMessage}
               />
             </Row>
-            <Divider type="horizontal" style={{ width: 'auto', margin: 0 }} />
             <Row
               style={{
                 // borderWidth: 1,
@@ -141,92 +120,100 @@ export default function Chat() {
                   width: '100%',
                 }}
               >
-                {[...Array(20)].map((item, ri) => {
-                  return (
-                    <Row
-                      key={`room-${ri}`}
-                      style={{
-                        padding: '8px 20px',
-                        width: '100%',
-                        cursor: 'pointer',
-                        // ['&:hover']: {
-                        //   background: '#efefef',
-                        // },
-                      }}
-                      onClick={() => handleJoinChat(item.id)}
-                    >
-                      <Avatar
-                        style={{ marginRight: 12 }}
-                        shape="circle"
-                        size={56}
-                        icon={<UserOutlined color="#eeeeee" />}
-                        // src={
-                        //   'https://i.imgur.com/vLp3Xy8_d.webp?maxwidth=760&fidelity=grand'
-                        // }
-                      />
-                      <Col>
-                        <Paragraph style={{ marginBottom: 0 }} strong>
-                          xxx
-                        </Paragraph>
-                        <Row>
-                          <Paragraph
-                            style={{
-                              marginTop: 8,
-                              paddingBottom: 0,
-                            }}
-                          >
-                            xxx 🥲🥲
+                {chats.length > 0 &&
+                  chats.map((item: any, ri: number) => {
+                    return (
+                      <Row
+                        key={`room-${ri}`}
+                        style={{
+                          padding: '8px 20px',
+                          width: '100%',
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => handleJoinChat(ri + '')}
+                      >
+                        <Avatar
+                          style={{ marginRight: 12 }}
+                          shape="circle"
+                          size={56}
+                          // icon={<UserOutlined color="#eeeeee" />}
+                          // src={
+                          //   'https://i.imgur.com/vLp3Xy8_d.webp?maxwidth=760&fidelity=grand'
+                          // }
+                        >
+                          {capitalizeAvatarUsername(item.name)}
+                        </Avatar>
+                        <Col>
+                          <Paragraph style={{ marginBottom: 0 }} strong>
+                            {item.name}
                           </Paragraph>
-                          <Paragraph
-                            style={{
-                              marginTop: 8,
-                              paddingBottom: 0,
-                              marginLeft: 4,
-                              marginRight: 4,
-                            }}
-                          >
-                            ·
-                          </Paragraph>
-                          <Paragraph
-                            style={{
-                              marginTop: 8,
-                              paddingBottom: 0,
-                            }}
-                          >
-                            1d
-                          </Paragraph>
-                        </Row>
-                      </Col>
-                    </Row>
-                  )
-                })}
+                          <Row>
+                            <Paragraph
+                              style={{
+                                marginTop: 8,
+                                paddingBottom: 0,
+                              }}
+                            >
+                              {item.lastMessage}
+                            </Paragraph>
+                            <Paragraph
+                              style={{
+                                marginTop: 8,
+                                paddingBottom: 0,
+                                marginLeft: 4,
+                                marginRight: 4,
+                              }}
+                            >
+                              ·
+                            </Paragraph>
+                            <Paragraph
+                              style={{
+                                marginTop: 8,
+                                paddingBottom: 0,
+                              }}
+                            >
+                              1d
+                            </Paragraph>
+                          </Row>
+                        </Col>
+                      </Row>
+                    )
+                  })}
               </div>
             </Row>
           </Col>
           <Divider type="vertical" style={{ height: 'auto', margin: 0 }} />
-          <Col
-            flex={1}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 24,
-            }}
-          >
-            {currentChat ? (
-              <div>asd</div>
-            ) : (
+          {currentChat ? (
+            <Col
+              flex={1}
+              style={{
+                height: '100%',
+                overflow: 'hidden',
+              }}
+            >
+              <Messages />
+            </Col>
+          ) : (
+            <Col
+              flex={1}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 24,
+              }}
+            >
               <YourMessages handleNewMessage={handleNewMessage} />
-            )}
-          </Col>
+            </Col>
+          )}
         </Row>
       </Card>
 
       <NewMessageForm
-        form={modal.form}
-        visible={modal.visible}
-        onCreate={handleOk}
-        onCancel={handleCancel}
+        form={newMessageForm}
+        visible={newMessageVisible}
+        onCreate={handleOnCreate}
+        onCancel={handleOnCancel}
       />
     </Fragment>
   )
