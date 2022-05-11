@@ -5,7 +5,7 @@ import { capitalizeAvatarUsername } from '../../utils'
 
 const { Paragraph } = Typography
 
-export const User = ({ user, onClick = () => {} }: any) => {
+export const User = ({ user }: any) => {
   return (
     <Fragment>
       <Row
@@ -15,9 +15,14 @@ export const User = ({ user, onClick = () => {} }: any) => {
           outline: 'none',
           padding: '8px 16px',
         }}
-        onClick={() => onClick(user)}
       >
-        <Col>
+        <Col
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <Avatar
             style={{
               marginRight: 12,

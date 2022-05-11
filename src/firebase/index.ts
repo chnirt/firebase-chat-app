@@ -8,6 +8,7 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
   getFirestore,
   limit,
   onSnapshot,
@@ -55,6 +56,25 @@ export const saveUserToFirestore = async (userInput: any) => {
     // const docRef = await addDoc(collection(db, 'users'), userData)
     return docRef
   } catch (error) {}
+}
+
+export const getUsersFromFirestore = async (email?: string) => {
+  const q = query(
+    collection(db, 'users'),
+    where('email', '!=', auth!.currentUser!.email),
+    ...(email ? [where('email', '==', email)] : []),
+    limit(10)
+  )
+  const querySnapshot = await getDocs(q)
+  querySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    // console.log(doc.id, " => ", doc.data());
+  })
+  const users = querySnapshot.docs.map((docSnapshot) => ({
+    id: docSnapshot.id,
+    ...docSnapshot.data(),
+  }))
+  return users
 }
 
 export const getUserFromFirestore = async (userId: string) => {

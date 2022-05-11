@@ -104,7 +104,7 @@ export const PostCreateForm: React.FC<PostCreateFormProps> = ({
         form={form}
         layout="vertical"
         name="form_in_modal"
-        initialValues={{ modifier: 'public' }}
+        initialValues={{}}
       >
         <Form.Item
           name="caption"

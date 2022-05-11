@@ -3,7 +3,7 @@ import { Avatar, Button, Card, Col, Divider, Form, Row, Typography } from 'antd'
 // import { UserOutlined } from '@ant-design/icons'
 import { FiEdit } from 'react-icons/fi'
 
-import { useAuth, useModal } from '../../context'
+import { useAuth } from '../../context'
 import { NewMessageForm, YourMessages, Messages } from '../../components'
 import { capitalizeAvatarUsername } from '../../utils'
 
@@ -11,7 +11,6 @@ const { Title, Paragraph } = Typography
 
 export default function Chat() {
   const auth = useAuth()
-  const modal = useModal()
   const [newMessageForm] = Form.useForm()
   const [newMessageVisible, setNewMessageVisible] = useState(false)
   const [chats, setChats] = useState<any>([])
@@ -29,15 +28,16 @@ export default function Chat() {
 
   const handleNewMessage = useCallback(() => {
     setNewMessageVisible(true)
-  }, [modal])
+  }, [])
 
-  const handleOnCreate = useCallback(() => {
+  const handleOnCreate = useCallback(async (values) => {
+    console.log(values)
     setNewMessageVisible(false)
-  }, [modal])
+  }, [])
 
   const handleOnCancel = useCallback(() => {
     setNewMessageVisible(false)
-  }, [modal])
+  }, [])
 
   const handleJoinChat = useCallback((id: string) => {
     setCurrentChat({

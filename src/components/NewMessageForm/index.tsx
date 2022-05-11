@@ -7,10 +7,13 @@ import {
   Row,
   Typography,
   Divider,
+  Form,
+  Radio,
 } from 'antd'
 import { IoCloseSharp } from 'react-icons/io5'
 
 import { User } from '../User'
+import { getUsersFromFirestore } from '../../firebase'
 
 const { Title, Text } = Typography
 
@@ -36,22 +39,20 @@ export const NewMessageForm: React.FC<NewMessageFormProps> = ({
   const [users, setUsers] = useState<any>([])
 
   useEffect(() => {
-    setUsers(
-      [...Array(20)].map((user: any, ui: number) => ({
-        id: ui,
-        username: `username-${ui}`,
-        fullName: `fullName-${ui}`,
-        isChecked: false,
-      }))
-    )
+    const fetchUser = async () => {
+      const data = await getUsersFromFirestore()
+      setUsers(data)
+    }
+
+    fetchUser()
   }, [])
 
-  const handleSelectUser = useCallback((selectUser) => {
+  const handleSelectUser = useCallback((email: string) => {
     setUsers((prevState: any) =>
       prevState.map((user: any) =>
-        user.id === selectUser.id
+        user.email === email
           ? { ...user, isChecked: !user.isChecked }
-          : user
+          : { ...user, isChecked: false }
       )
     )
   }, [])
@@ -60,6 +61,7 @@ export const NewMessageForm: React.FC<NewMessageFormProps> = ({
     form
       .validateFields()
       .then((values) => {
+        console.log(values)
         onCreate(values)
       })
       .catch((info) => {
@@ -103,7 +105,8 @@ export const NewMessageForm: React.FC<NewMessageFormProps> = ({
             }}
             type="link"
             // loading={submitting}
-            // onClick={onSubmit}
+            // onClick={handleCreateChat}
+            onClick={onOk}
           >
             Next
           </Button>
@@ -149,12 +152,41 @@ export const NewMessageForm: React.FC<NewMessageFormProps> = ({
         <Row style={{ margin: 16 }}>
           <Text strong>Suggested</Text>
         </Row>
-        {users.length > 0 &&
-          users.map((user: any, ui: any) => {
-            return (
-              <User key={`user-${ui}`} user={user} onClick={handleSelectUser} />
-            )
-          })}
+        <Form
+          form={form}
+          layout="vertical"
+          name="form_in_modal"
+          initialValues={{}}
+        >
+          <Form.Item name="userId">
+            <Radio.Group
+              style={{ borderWidth: 0 }}
+              onChange={(e) => {
+                const email = e.target.value
+                handleSelectUser(email)
+              }}
+            >
+              {users.length > 0 &&
+                users.map((user: any, ui: number) => {
+                  return (
+                    <Radio.Button
+                      key={`user-${ui}`}
+                      style={{
+                        paddingLeft: 0,
+                        paddingRight: 0,
+                        borderWidth: 0,
+                        width: '100%',
+                      }}
+                      type="link"
+                      value={user.email}
+                    >
+                      <User key={`user-${ui}`} user={user} />
+                    </Radio.Button>
+                  )
+                })}
+            </Radio.Group>
+          </Form.Item>
+        </Form>
       </div>
     </Modal>
   )
