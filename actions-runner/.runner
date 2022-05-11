@@ -1,9 +1,0 @@
-﻿{
-  "agentId": 2,
-  "agentName": "Trinhs-MacBook-Pro",
-  "poolId": 1,
-  "poolName": "Default",
-  "serverUrl": "https://pipelines.actions.githubusercontent.com/Q25qucGkDS1sUq1epY8kp5ey4igZEkSDOQwuIW8BpiFbDIAQa3",
-  "gitHubUrl": "https://github.com/chnirt/firebase-chat-app",
-  "workFolder": "_work"
-}
