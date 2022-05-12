@@ -1,15 +1,15 @@
-name: example-workflow
+# https://jessicadeen.com/posts/2020/github-actions-self-hosted-runner/
+
+# https://dev.to/wayofthepie/improving-our-github-actions-runner-image-46ff
+
 on: [push]
+
+name: self-hosted-example
+
 jobs:
-  production-deploy:
-    # if: github.repository == 'octo-org/octo-repo-prod'
-    # runs-on: ubuntu-latest
-    # runs-on: [self-hosted, linux, ARM64]
-    # runs-on: [self-hosted, macOS, x64]
-    runs-on: [self-hosted]
+  simpleExample:
+    runs-on: self-hosted
+    # 'self-hosted', 'macOS', 'X64'
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '14'
-      - run: npm install -g bats
+      # checkout branch
+      - uses: actions/checkout@master
