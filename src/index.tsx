@@ -29,6 +29,8 @@ import ModalProvider from './context/modal'
 //   document.getElementById('root')
 // )
 
+// 123
+
 const container = document.getElementById('root')
 if (!container) throw new Error('Failed to find the root element')
 const root = ReactDOMClient.createRoot(container)
